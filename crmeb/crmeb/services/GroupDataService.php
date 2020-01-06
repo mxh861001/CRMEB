@@ -23,15 +23,18 @@ class GroupDataService
      */
     public static function getGroupData(string $config_name, $limit = 0, bool $isCaChe = false): array
     {
-        try {
-            $cacheName = $limit ? "group_data_{$config_name}_{$limit}" : "data_{$config_name}";
-
-            $callable = function () use ($config_name, $limit) {
+        $callable = function () use ($config_name, $limit) {
+            try {
                 $data = SystemGroupData::getGroupData($config_name, $limit);
                 if (is_object($data))
                     $data = $data->toArray();
                 return $data;
-            };
+            } catch (\Exception $e) {
+                return [];
+            }
+        };
+        try {
+            $cacheName = $limit ? "group_data_{$config_name}_{$limit}" : "data_{$config_name}";
 
             if ($isCaChe)
                 return $callable();
@@ -39,7 +42,7 @@ class GroupDataService
             return CacheService::get($cacheName, $callable);
 
         } catch (\Throwable $e) {
-            return [];
+            return $callable();
         }
     }
 
@@ -52,15 +55,18 @@ class GroupDataService
      */
     public static function getData(string $config_name, int $limit = 0, bool $isCaChe = false): array
     {
-        try {
-            $cacheName = $limit ? "data_{$config_name}_{$limit}" : "data_{$config_name}";
-
-            $callable = function () use ($config_name, $limit) {
+        $callable = function () use ($config_name, $limit) {
+            try {
                 $data = SystemGroupData::getAllValue($config_name, $limit);
                 if (is_object($data))
                     $data = $data->toArray();
                 return $data;
-            };
+            } catch (\Exception $e) {
+                return [];
+            }
+        };
+        try {
+            $cacheName = $limit ? "data_{$config_name}_{$limit}" : "data_{$config_name}";
 
             if ($isCaChe)
                 return $callable();
@@ -68,7 +74,7 @@ class GroupDataService
             return CacheService::get($cacheName, $callable);
 
         } catch (\Throwable $e) {
-            return [];
+            return $callable();
         }
     }
 
@@ -80,15 +86,18 @@ class GroupDataService
      */
     public static function getDataNumber(int $id, bool $isCaChe = false): array
     {
-        try {
-            $cacheName = "data_number_{$id}";
-
-            $callable = function () use ($id) {
+        $callable = function () use ($id) {
+            try {
                 $data = SystemGroupData::getDateValue($id);
                 if (is_object($data))
                     $data = $data->toArray();
                 return $data;
-            };
+            } catch (\Exception $e) {
+                return [];
+            }
+        };
+        try {
+            $cacheName = "data_number_{$id}";
 
             if ($isCaChe)
                 return $callable();
@@ -96,7 +105,7 @@ class GroupDataService
             return CacheService::get($cacheName, $callable);
 
         } catch (\Throwable $e) {
-            return [];
+            return $callable();
         }
     }
 }
